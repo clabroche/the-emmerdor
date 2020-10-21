@@ -13,9 +13,9 @@ const triggeredUsers = ['iryu54', 'loki666']
       leaveChannel(bot, newMember)
     }
   })
-//   discord.send(`Hello ! 
-// I'm starting in version ${require('../package.json').version}
-// `)
+  discord.send(`Hello ! 
+I'm starting in version ${require('../package.json').version}
+`)
 })()
 
 /**
