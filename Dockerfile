@@ -8,7 +8,7 @@ RUN npm ci
 COPY . .
 
 FROM alpine:3.11
-RUN apk --no-cache add nodejs
+RUN apk --no-cache add nodejs ffmpeg
 WORKDIR /theemmerdor
 RUN mkdir /theemmerdor/dist
 COPY --from=builder /theemmerdor .
