@@ -1,0 +1,21 @@
+{
+  "name": "@iryu54/theemmerdor",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "theemmerdor": "src/index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@discordjs/opus": "^0.3.2",
+    "axios": "^0.19.2",
+    "bluebird": "^3.7.2",
+    "discord.js": "^12.2.0",
+    "fs-extra": "^9.0.1"
+  }
+}
