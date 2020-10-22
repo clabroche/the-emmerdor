@@ -16,7 +16,7 @@
 
   const App = {
     template: `
-<div v-if="!authenticated" class="root">
+<div v-if="authenticated" class="root">
   <div class="left">
     <h1>Gérer le bot "The emmerdor" sur discord</h1>
     <fieldset v-for="user of triggered" :key="user.username">
