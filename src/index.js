@@ -15,6 +15,7 @@ const triggeredUsers = ['iryu54', 'loki666']
   })
   discord.send(`Hello ! 
 I'm starting in version ${require('../package.json').version}
+${process.env.NODE_ENV === 'development' ? '(development version)': ''}
 `)
 })()
 
@@ -51,13 +52,9 @@ async function leaveChannel(client, voiceState) {
 }
 
 function requirements() {
-  const {DISCORD_TOKEN, URLS, CHANNEL_ID} = process.env
+  const {DISCORD_TOKEN, CHANNEL_ID} = process.env
   if(!DISCORD_TOKEN) {
     console.error('Please provide a DISCORD_TOKEN env')
-    process.exit(1)
-  }
-  if (!URLS) {
-    console.error('Please provide an URLS env. Example: URLS=http://some-site.com,https://another-site/somewhere')
     process.exit(1)
   }
   if (!CHANNEL_ID) {
