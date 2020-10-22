@@ -46,11 +46,13 @@ module.exports = {
     return fse.writeJSON(jsonPath, this.list)
   }
 }
-if (!fse.existsSync(jsonPath)) {
-  module.exports.save()
-} else {
-  module.exports.list = fse.readJsonSync(jsonPath)
-}
+setTimeout(() => {
+  if (!fse.existsSync(jsonPath)) {
+    module.exports.save()
+  } else {
+    module.exports.list = fse.readJsonSync(jsonPath)
+  }
+}, 1000);
 function createUserEmbededDescription(user) {
   let description = `=> ${user.username}: \n`
   description += user.channels.map(channel => `====>${getChannelName(channel.id)} => ${channel.sound}`).join('\n')
