@@ -1,0 +1,67 @@
+body {
+  margin: none;
+  background-color: #36393f;
+  color: white;
+}
+fieldset {
+  position: relative;
+  background-color: #4f545c;
+  border: 0;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  box-shadow: 0px 0px 5px 0px #373737;
+}
+select {
+  background-color: #4f545c;
+  color: white;
+}
+fieldset legend {
+  background-color: #4f545c;
+  box-shadow: 0px 0px 5px 0px #373737;
+  border-radius: 4px;
+}
+fieldset>i.fas {
+  position: absolute;
+  top: 0;
+  right: -5px;
+}
+i.fas {
+  background-color: white;
+  color:black;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  margin-right: 10px;
+  align-items: center;
+}
+.channel {
+  margin: 10px 0;
+  display: flex;
+}
+.channel-name {
+  width: 150px;
+}
+.channel select {
+  margin-left: 10px;
+}
+.add-channel {
+  margin-top:30px;
+  display: flex;
+}
+.add-channel select {
+  margin-left: 28px;
+}
+.root {
+  display: flex;
+  justify-content: space-between;
+}
+ul {
+  list-style: none;
+  padding: 10px;
+}
+.sound {
+  display: flex;
+  margin: 5px 0;
+}

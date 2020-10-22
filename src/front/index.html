@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Theemmerdor</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+  <div id="app"></div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+
+  const App = {
+    template: `
+<div v-if="!authenticated" class="root">
+  <div class="left">
+    <h1>Gérer le bot "The emmerdor" sur discord</h1>
+    <fieldset v-for="user of triggered" :key="user.username">
+      <legend>{{user.username}}</legend> 
+      <i class="fas fa-times" aria-hidden="true" @click="deleteUser(user)"></i>
+      <div  v-for="channel of user.channels" :key="channel.id" class="channel">
+        <i class="fas fa-times" aria-hidden="true" @click="deleteChannel(user, channel)"></i>
+        <div class="channel-name">{{channel.name}}</div> =>
+        <select @input="save()" v-model="channel.sound">
+          <option :selected="!channel.sound"></option>
+          <option v-for="sound of sounds" :key="sound" :selected="sound === channel.sound">{{sound}}</option>
+        </select>
+      </div>
+      <div class="add-channel">
+        <i class="fas fa-plus" aria-hidden="true"></i>
+        <div class="channel-name">Ajouter un channel</div>
+        <select @input="addChannel(user, $event.target.value)">
+          <option></option>
+          <option v-for="channel of channelsNotInUser(user)" :key="channel.id" :value="channel.id">{{channel.name}}</option>
+        </select>
+      </div>
+    </fieldset>
+    Ajouter un utilisateur
+    <select @input="addUser($event.target.value)">
+      <option></option>
+      <option v-for="user of usersNotConfigured()" :key="user.username" :value="user.username">{{user.username}}</option>
+    </select>
+  </div>
+  <div class="left">
+    <fieldset>
+      <legend>Mes fichiers</legend>
+      <ul>
+        <li v-for="sound of sounds" :key="sound" class="sound">
+          <i class="fas fa-times" aria-hidden="true" @click="deleteSound(sound)"></i>
+          {{sound}}
+        </li>
+      </ul>
+      Ajouter un son
+      <input type='file' ref="upload" name='sound' accept="audio/*" @input='upload($event.target.files)'>
+    </fieldset>
+  </div>
+</div>
+<div v-else>
+  <input v-model="password" autofocus></input>  
+</div>
+`,
+    data() {
+      return {
+        users: [],
+        channels: [],
+        triggered: [],
+        sounds: [],
+        authenticated: false,
+        password: ''
+      }
+    },
+    async mounted() {
+      this.refresh()
+    },
+    watch: {
+      async password() {
+        const {data: authenticated} = await axios.post('/auth', {password:this.password}) 
+        this.authenticated = authenticated
+      }
+    },
+    methods: {
+      async upload(files){
+        console.log('upload')
+        var formData = new FormData();
+        formData.append("sound", files[0]);
+        await axios.post('/sounds/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+        this.$refs.upload.value = "";
+        this.refresh()
+      },
+      async refresh() {
+        const { data: users } = await axios.get('/users')
+        this.users = users
+        const { data: channels } = await axios.get('/channels')
+        this.channels = channels
+        const { data: triggered } = await axios.get('/users/triggered')
+        this.triggered = triggered
+        const { data: sounds } = await axios.get('/sounds')
+        this.sounds = sounds
+      },
+      async deleteSound(sound) {
+        await axios.delete('/sounds/' + sound)
+        this.refresh()
+      },
+      save() {
+        console.log(this.triggered)
+        axios.post('/users/triggered', this.triggered)
+        this.refresh()
+      },
+      channelsNotInUser(user) {
+        const userChannelIds = user.channels.map(a => a.id)
+        return this.channels.filter(channel => !userChannelIds.includes(channel.id))
+      },
+      usersNotConfigured() {
+        const usernames = this.triggered.map(a => a.username)
+        console.log(this.triggered, usernames)
+        return this.users.filter(user => !usernames.includes(user.username))
+      },
+      deleteUser(user) {
+        const index = this.triggered.indexOf(user)
+        this.triggered.splice(index, 1)
+        this.save()
+      },
+      deleteChannel(user, channel) {
+        const index = user.channels.indexOf(channel)
+        user.channels.splice(index, 1)
+        this.save()
+      },
+      addChannel(user, channelId) {
+        user.channels.push({ id: channelId })
+        this.save()
+      },
+      addUser(userId) {
+        this.triggered.push({username: userId, channels: []})
+        this.save()
+      },
+  
+    }
+  }
+
+  new Vue({
+    components: {App},
+    template: '<app/>',
+    el: '#app',
+  })
+
+</script>
+</html>

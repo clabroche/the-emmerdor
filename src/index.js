@@ -1,8 +1,10 @@
 #!/bin/env node
+require('array-flat-polyfill');
 requirements()
-const Discord = require('discord.js');
+const path = require('path')
 const discord = require('./discord')
-const triggeredUsers = ['iryu54', 'loki666']
+const triggeredUsers = require('./triggeredUsers')
+require('./server')
 ;(async _ => {
   const bot = await discord.ready()
   bot.on('voiceStateUpdate', (oldMember, newMember) => {
@@ -28,14 +30,26 @@ async function enterChannel(client, voiceState) {
   const userId = voiceState.id
   const user = client.users.cache.get(userId)
   discord.send(`${user.username} enter`)
-  if(triggeredUsers.includes(user.username)) {
-    discord.send(`${user.username} is in the trigger list => send audio`)
-    const connection = await voiceState.channel.join()
-    const dispatcher = connection.play('./audiofile.mp3')
-    dispatcher.on("finish", () => {
-      voiceState.channel.leave()
-    });
-  }else {
+  const triggeredUser = triggeredUsers.getUser(user.username)
+  if(triggeredUser) {
+    const triggeredChannel = triggeredUser
+      .channels
+      .filter(channel => channel.id === voiceState.channelID)
+      .pop()
+    if (triggeredChannel && triggeredChannel.sound) {
+      discord.send(`${user.username} is in the trigger list => send audio`)
+      const audio = path.resolve(__dirname, '..', 'sounds', triggeredChannel.sound)
+      const connection = await voiceState.channel.join()
+      setTimeout(async() => {
+        const dispatcher = connection.play(audio)
+        dispatcher.on("finish", () => {
+          voiceState.channel.leave()
+        });
+      }, 1000);
+    }else {
+      discord.send(`${user.username} is not in the channel list => not send audio`)
+    }
+  } else {
     discord.send(`${user.username} is not in the trigger list => not send audio`)
   }
 }
@@ -52,13 +66,17 @@ async function leaveChannel(client, voiceState) {
 }
 
 function requirements() {
-  const {DISCORD_TOKEN, CHANNEL_ID} = process.env
+  const {DISCORD_TOKEN, CHANNEL_ID, PASSWORD} = process.env
   if(!DISCORD_TOKEN) {
     console.error('Please provide a DISCORD_TOKEN env')
     process.exit(1)
   }
   if (!CHANNEL_ID) {
     console.error('Please provide an CHANNEL_ID env')
+    process.exit(1)
+  }
+  if (!PASSWORD) {
+    console.error('Please provide an PASSWORD env')
     process.exit(1)
   }
 }
