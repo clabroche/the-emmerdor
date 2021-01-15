@@ -24,7 +24,7 @@
       <i class="fas fa-times" aria-hidden="true" @click="deleteUser(user)"></i>
       <div  v-for="channel of user.channels" :key="channel.id" class="channel">
         <i class="fas fa-times" aria-hidden="true" @click="deleteChannel(user, channel)"></i>
-        <div class="channel-name">{{channel.name}}</div> =>
+        <div class="channel-name">{{channel.guildName}} > {{channel.name}}</div> =>
         <select @input="save()" v-model="channel.sound">
           <option :selected="!channel.sound"></option>
           <option v-for="sound of sounds" :key="sound" :selected="sound === channel.sound">{{sound}}</option>
@@ -35,7 +35,7 @@
         <div class="channel-name">Ajouter un channel</div>
         <select @input="addChannel(user, $event.target.value)">
           <option></option>
-          <option v-for="channel of channelsNotInUser(user)" :key="channel.id" :value="channel.id">{{channel.name}}</option>
+          <option v-for="channel of channelsNotInUser(user)" :key="channel.id" :value="channel.id">{{channel.guildName}} > {{channel.name}}</option>
         </select>
       </div>
     </fieldset>

@@ -72,13 +72,21 @@ app.post('/users/triggered', async(req, res) => {
   triggeredUsers.list = req.body
   triggeredUsers.list.forEach(user => user.channels.forEach(channel => {
     channel.name = getChannelName(channel.id)
+    channel.guildName = getGuildNameFromChannelId(channel.id)
     if(!channel.sound) channel.sound = null
   }))
   await triggeredUsers.save()
   res.json(req.body)
 })
 app.get('/channels', (req, res) => {
-  res.json(Array.from(discord.client.channels.cache.values()).filter(a => a.type === 'voice'))
+  const channels = Array
+    .from(discord.client.channels.cache.values())
+    .filter(channel => channel.type === 'voice')
+    .map(channel => {
+      channel.guildName = channel.guild.name
+      return channel
+    })
+  res.json(channels)
 })
 app.get('/users', (req, res) => {
   res.json(Array.from(discord.client.users.cache.values()))
@@ -109,4 +117,7 @@ app.listen(port, () => {
 
 function getChannelName(channelId) {
   return discord.client.channels.cache.get(channelId).name
+}
+function getGuildNameFromChannelId(channelId) {
+  return discord.client.channels.cache.get(channelId).guild.name
 }
