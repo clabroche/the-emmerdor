@@ -2,15 +2,16 @@
 // @ts-ignore
 require('array-flat-polyfill');
 require('./requirements')
+require('./server')
 const path = require('path')
 const discord = require('./discord')
 const triggeredUsers = require('./triggeredUsers')
-require('./server')
+
 const sessions = {}
 ;(async _ => {
   const bot = await discord.ready()
-  bot.on('voiceStateUpdate', (oldMember, newMember) => {
-    if (newMember.id === bot.user.id) return
+  bot.on('voiceStateUpdate', (oldMember, newMember) => { // event when an user enter, leave or make something on a voice channel
+    if (newMember.id === bot.user.id) return // not trigger audio when bot enter on channel to play sound
     if (newMember.channelID) {
       enterChannel(bot, newMember)
     } else {
@@ -24,7 +25,8 @@ ${process.env.NODE_ENV === 'development' ? '(development version)': ''}
 })()
 
 /**
- * 
+ * Check if a user have conf associated to a sound and this channel
+ * if ok: play sound
  * @param {import('discord.js').Client} client 
  * @param {import('discord.js').VoiceState} voiceState 
  */
@@ -33,21 +35,21 @@ async function enterChannel(client, voiceState) {
   const user = client.users.cache.get(userId)
   // discord.send(`${user.username} enter`)
   const triggeredUser = triggeredUsers.getUser(user.username)
-  if(sessions[userId]) return
-  sessions[userId] = true
-  if(triggeredUser) {
+  if(sessions[userId]) return // If user is already in a channel and has already trigger a sound, do not trigger a sound
+  sessions[userId] = true // Flag user to have been triggered already a sound to prevent to re-trigger
+  if(triggeredUser) { // if user have a conf 
     const triggeredChannel = triggeredUser
       .channels
       .filter(channel => channel.id === voiceState.channelID)
       .pop()
-    if (triggeredChannel && triggeredChannel.sound) {
+    if (triggeredChannel && triggeredChannel.sound) { // and if user is correctly configured for this channel
       // discord.send(`${user.username} is in the trigger list => send audio`)
       const audio = path.resolve(__dirname, '..', 'sounds', triggeredChannel.sound)
-      const connection = await voiceState.channel.join()
-      setTimeout(async() => {
+      const connection = await voiceState.channel.join() // create tunnel to channel voice to transit sound
+      setTimeout(async() => { // Wait 1s for user to join and etablish the audio connection to channel
         const dispatcher = connection.play(audio)
         dispatcher.on("finish", () => {
-          try {voiceState.channel.leave()} catch (err) {}
+          try {voiceState.channel.leave()} catch (err) {} // Bot should leave the channel to re-enter later
         });
       }, 1000);
     }else {
@@ -59,7 +61,7 @@ async function enterChannel(client, voiceState) {
 }
 
 /**
- * 
+ * Flag user to re-trigger him when he re-enter later in a channel
  * @param {import('discord.js').Client} client 
  * @param {import('discord.js').VoiceState} voiceState 
  */

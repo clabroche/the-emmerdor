@@ -3,47 +3,49 @@ const client = new Discord.Client();
 const token = process.env.DISCORD_TOKEN
 const channelId = process.env.CHANNEL_ID
 const axios = require('axios').default;
-const triggeredUsers = require('./triggeredUsers')
+
+/**
+ * Describe all your command available for your bot
+ * each command should have a key with what the user should type
+ * and a value with a description field and cb field (reference to a function that will be triggered)
+ */
 const commands = {
-  '/ISALIVE': {
+  '/ISALIVE': { // Check if server is alive
     cb: areYouAlive,
     description: 'Check if i am alive'
   },
-  '/LIST': {
-    cb: () => triggeredUsers.display(),
+  '/LIST': { // Display an embedded message with all users configured for an audio trigger
+    cb: () => require('./triggeredUsers').display(),
     description: 'List all persons'
   },
-  '/LIST:ADD': {
-    cb: triggeredUsers.addInList,
-    description: 'Add a service (ex: /list:add https://google.fr)'
-  },
-  '/LIST:REMOVE': {
-    cb: triggeredUsers.removeInList,
-    description: 'Remove a service (ex: /list:remove https://google.fr)'
-  },
-  '/HELP': {
+  '/HELP': { // Show command helper
     cb: help,
     description: 'Show this help'
   },
 }
 
-/** @type {import('discord.js').Client} */
+/** 
+ * @type {import('discord.js').Client} 
+ */
 module.exports.client = null
 
-/** @return {Promise<import('discord.js').Client>} */
+/** 
+ * Wrapper function that resolve a promise only when discord connection is etablished and all event is ready to be listened
+ * @return {Promise<import('discord.js').Client>}
+ */
 module.exports.ready = function() {
   return new Promise((res) => {
     client.on('ready', () => {
       console.log(`Logged in as ${client.user.tag}!`);
+      // @ts-ignore
       module.exports.client = client
       res(client)
     });
-    client.on('message', message => {
-      if (message.author.bot || message.channel.id !== channelId) return 
+    client.on('message', message => { 
+      if (message.author.bot || message.channel.id !== channelId) return // not execute command if the bot say it or if command is from a wrong channel (process.env.CHANNEL_ID) 
       const msg = message.content.toUpperCase().split(' ')[0]
       Object.keys(commands).forEach(command => {
         if (msg === command) {
-          console.log(commands[command])
           commands[command].cb(message.content.toLowerCase().replace(command.toLocaleLowerCase(), '').trim())
         }
       })
@@ -52,7 +54,10 @@ module.exports.ready = function() {
   })
 }
 
-/** @param {string} msg */
+/** 
+ * Send a message in textual channel
+ * @param {string | import('discord.js').MessageEmbed} msg
+ */
 module.exports.send = function (msg) {
   console.log('Send to Discord')
   // @ts-ignore
@@ -60,7 +65,10 @@ module.exports.send = function (msg) {
 }
 
 
-/** @param {string} msg */
+/**
+ * Send a message in textual channel from discord Web API
+ * @param {string | import('discord.js').MessageEmbed} msg
+ */
 module.exports.sendWithApi = function (msg) {
   axios.post(`https://discord.com/api/v6/channels/${channelId}/messages`, msg, {
     headers: {
@@ -69,8 +77,10 @@ module.exports.sendWithApi = function (msg) {
   })
 }
 
-
-function areYouAlive(message) {
+/**
+ * Just say something to discord to check if the bot can respond 
+ */
+function areYouAlive() {
   const possibilities = [
     "Yes I'm alive ! And you ?",
     "Maybe, I'm just a robot, I don't know...",
@@ -80,6 +90,9 @@ function areYouAlive(message) {
   module.exports.send(possibilities[Math.floor(Math.random() * possibilities.length)]);
 }
 
+/**
+ * Show all command availble directly to discord text channel
+ */
 function help() {
   return module.exports.send(new Discord.MessageEmbed()
     .setColor('#faa329')
