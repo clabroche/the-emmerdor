@@ -10,6 +10,17 @@ It quickly becomes annoying for him
 npm i
 ```
 
+## Get a discord token
+
+Go [here](https://discord.com/developers/applications).
+
+Click on ``` New application ```
+
+Go to ```bot``` and ```add bot```
+
+You can get your token when you click on ```Click to Reveal Token```
+
+
 ## Usage
 
 ``` bash
