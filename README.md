@@ -30,7 +30,7 @@ This bot is automatically deploy to production when a tag is created.
 A docker version is upload [here](https://github.com/clabroche/docker-registry/packages/466346
 )
 
-An exemple of docker-compose.yml is present on this repository 
+An exemple of [docker-compose.yml](https://github.com/clabroche/the-emmerdor/blob/master/docker-compose.yml) is present on this repository 
 
 ## Contribute
 
