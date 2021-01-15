@@ -43,6 +43,14 @@ A docker version is upload [here](https://github.com/clabroche/docker-registry/p
 
 An exemple of [docker-compose.yml](https://github.com/clabroche/the-emmerdor/blob/master/docker-compose.yml) is present on this repository 
 
+## Architecture
+- configs // Where config are stored for persistence
+- sounds // Where sound are stored for persistence
+- src  // All source code 
+  - front // admin front end 
+  - index.js // bot entrypoint
+  -  server.js // server launched on bot startup
+
 ## Contribute
 
 Your commit should be in [this format](https://github.com/commitizen/cz-cli)
