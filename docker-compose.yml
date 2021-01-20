@@ -10,6 +10,7 @@ services:
       PORT: 4512
       PASSWORD: "a password to protect front"
       DISCORD_TOKEN: token from your discord bot dashboard
+      PRISON_TOKEN: token for prison from you discord bot dashboard (must to be different of DISCORD_TOKEN)
       CHANNEL_ID: Id of the channel where command of the bot can be written
     volumes:
       - where you want/configs:/theemmerdor/configs

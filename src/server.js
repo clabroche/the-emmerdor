@@ -10,6 +10,7 @@ const discord  = require('./discord')
 const fse = require('fs-extra')
 const soundPath = path.resolve(__dirname, '..', 'sounds')
 const PromiseB = require('bluebird')
+const prisonJSON = path.resolve(__dirname, '..','configs','prison.json')
 
 app.use(fileUpload({ createParentPath: true }))
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -162,6 +163,40 @@ app.post('/users/:username', async (req, res) => {
   res.json(triggeredUsers.getUser(req.params.username))
 })
 
+app.get('/prisonVocalID', (req, res) => {
+  res.json(discord.prisonChannel.id)
+})
+
+app.get('/actualPrisonMusic', (req, res) => {
+  res.json(discord.prisonChannel.music)
+})
+
+
+app.post('/changePrisonVocalID',  (req, res) => {
+  let isNum = /^\d+$/.test(req.body.id);
+  if (isNum)  {
+    let json = discord.prisonChannel
+    if (!json) return res.status(400).send("error with json file")
+    json.id = req.body.id
+    fse.writeJSON(prisonJSON, json)
+    discord.prisonChannel = json
+    discord.joinPrison(discord.client.channels.cache.get(req.body.id))
+  } else {
+    return res.status(400).send("the value must to be digits")
+  }
+})
+
+app.post('/changePrisonMusic',  (req, res) => {
+  let json = discord.prisonChannel
+  if (!json) return res.status(400).send("error with json file")
+  json.music = req.body.music
+  fse.writeJSON(prisonJSON, json)
+  discord.prisonChannel = json
+  setTimeout(() => {
+    discord.joinPrison(discord.prison.channels.cache.get(json.id))
+  }, 500)
+})
+
 /** Serve static front directory */
 app.use(express.static(path.resolve(__dirname, 'front')))
 
@@ -174,6 +209,7 @@ app.use((req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
+
 
 /**
  * Get channel name from channelId
