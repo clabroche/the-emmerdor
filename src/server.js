@@ -7,6 +7,7 @@ const bodyParser =require('body-parser')
 const path =require('path')
 const fileUpload = require('express-fileupload');
 const discord  = require('./discord')
+const prison = require('./prison')
 const fse = require('fs-extra')
 const soundPath = path.resolve(__dirname, '..', 'sounds')
 const PromiseB = require('bluebird')
@@ -164,37 +165,38 @@ app.post('/users/:username', async (req, res) => {
 })
 
 app.get('/prisonVocalID', (req, res) => {
-  res.json(discord.prisonChannel.id)
+  res.json(prison.prisonChannel.id)
 })
 
 app.get('/actualPrisonMusic', (req, res) => {
-  res.json(discord.prisonChannel.music)
+  res.json(prison.prisonChannel.music)
 })
 
 
-app.post('/changePrisonVocalID',  (req, res) => {
-  let isNum = /^\d+$/.test(req.body.id);
-  if (isNum)  {
-    let json = discord.prisonChannel
+app.post('/changePrisonVocalID',  async (req, res) => {
+  let isNan = Number.isNaN(+req.body.id);
+  if (!isNan)  {
+    let json = prison.prisonChannel
     if (!json) return res.status(400).send("error with json file")
     json.id = req.body.id
-    fse.writeJSON(prisonJSON, json)
-    discord.prisonChannel = json
-    discord.joinPrison(discord.client.channels.cache.get(req.body.id))
+    await fse.writeJSON(prisonJSON, json)
+    prison.prisonChannel = json
+    prison.join(discord.prison.channels.cache.get(req.body.id))
+    res.json(req.body.id)
   } else {
     return res.status(400).send("the value must to be digits")
   }
 })
 
-app.post('/changePrisonMusic',  (req, res) => {
-  let json = discord.prisonChannel
+app.post('/changePrisonMusic',  async(req, res) => {
+  let json = prison.prisonChannel
   if (!json) return res.status(400).send("error with json file")
   json.music = req.body.music
-  fse.writeJSON(prisonJSON, json)
-  discord.prisonChannel = json
-  setTimeout(() => {
-    discord.joinPrison(discord.prison.channels.cache.get(json.id))
-  }, 500)
+  await fse.writeJSON(prisonJSON, json)
+  prison.prisonChannel = json
+  await new Promise(res => setTimeout(res, 500))
+  prison.join(discord.prison.channels.cache.get(json.id))
+  res.json(req.body.id)
 })
 
 /** Serve static front directory */

@@ -12,6 +12,7 @@ fieldset {
 }
 select {
   background-color: #303030;
+  max-width: 150px;
   color: white;
 }
 fieldset legend {
@@ -59,6 +60,7 @@ i.fas {
 }
 .root {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
 }
 ul {
@@ -69,4 +71,87 @@ ul {
   display: flex;
   margin: 5px 0;
   align-items: center;
+}
+body {
+  margin: 0;
+}
+#navbar {
+  display: flex;
+  background-color: #6f7fb9;
+  margin-bottom: 10px;
+}
+#navbar h1{
+  font-size: 1.5em;
+  margin: 10px;
+}
+
+#tab-container{
+  display: flex;
+  flex-direction: column;
+}
+#tab-container #header {
+  display: flex;
+  justify-content: center;
+  font-size: 1.1em;
+  font-weight: bold;
+}
+#tab-container #header .item {
+  width: 200px;
+  padding: 10px;
+  text-align: center;
+  border-bottom: 4px solid transparent;
+  box-sizing: border-box;
+}
+#tab-container #header .active {
+  border-bottom: 4px solid white;
+  transition: 300ms
+}
+#tab-container .separator {
+  padding: 10px;
+  margin: 0 10px;
+}
+
+.emmerdor-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  max-width: 100vw;
+  overflow: auto;
+}
+.trigger-manager {
+  background-color: #414141;
+  border-radius: 4px;
+  padding: 5px;
+  margin: 10px 10px;
+  flex-grow: 1;
+}
+.sound-container {
+  background-color: #414141;
+  border-radius: 4px;
+  padding: 5px;
+  margin: 10px 0;
+}
+.prison-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+}
+.prison-section {
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+  background-color: #414141;
+  padding: 10px;
+  width: 500px;
+  margin: 10px;
+  border-radius: 10px;
+  text-align: center;
+}
+.prison-section select {
+  margin: auto;
+}
+.prison-section h3 {
+  margin: 0;
+  margin-bottom: 10px;
 }

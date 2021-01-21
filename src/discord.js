@@ -4,10 +4,7 @@ const prison = new Discord.Client();
 const token = process.env.DISCORD_TOKEN
 const prisonToken = process.env.PRISON_TOKEN
 const channelId = process.env.CHANNEL_ID
-const fse = require('fs-extra')
 const axios = require('axios').default;
-const path = require('path')
-const prisonJSON = path.resolve(__dirname, '..','configs','prison.json')
 
 /**
  * Describe all your command available for your bot
@@ -31,26 +28,13 @@ const commands = {
 
 
 
-setTimeout(() => {
-  if (!fse.existsSync(prisonJSON)) {
-    fse.writeJSON(prisonJSON, {})
-    module.exports.prisonChannel = fse.readJsonSync(prisonJSON)
-  } else {
-    module.exports.prisonChannel = fse.readJsonSync(prisonJSON)
-  }
-  if (this.prisonChannel && this.prisonChannel.id) this.joinPrison(prison.channels.cache.get(this.prisonChannel.id));
-}, 1000);
-
-
-
-/** 
- * @type {import('./discord').Client}
- */
+/** @type {import('discord.js').Client} */
 module.exports.client = null
+/** @type {import('discord.js').Client} */
 module.exports.prison = null
 /** 
  * Wrapper function that resolve a promise only when discord connection is etablished and all event is ready to be listened
- * @return {Promise<import('./discord').Client>}
+ * @return {Promise<import('discord.js').Client>}
  */
 module.exports.ready = function() {
   return new Promise((res) => {
@@ -117,21 +101,6 @@ function areYouAlive() {
   module.exports.send(possibilities[Math.floor(Math.random() * possibilities.length)]);
 }
 
-module.exports.joinPrison = function (channel){
-  channel.join().then(connection => {
-    launchPrisonAudio(connection);
-  });
-}
-
-function launchPrisonAudio(connection){
-  if (!fse.readJsonSync(prisonJSON).music) return
-  const audio = path.resolve(__dirname, '..', 'sounds', fse.readJsonSync(prisonJSON).music)
-  let dispatcher = connection.play(audio, {volume: 1});
-
-  dispatcher.on('finish', () => {
-    launchPrisonAudio(connection);
-  });
-}
 
 /**
  * Show all command availble directly to discord text channel
