@@ -1,24 +1,24 @@
 body {
   margin: none;
-  background-color: #36393f;
+  background-color: #202020;
   color: white;
 }
 fieldset {
   position: relative;
-  background-color: #4f545c;
+  background-color: #303030;
   border: 0;
   margin-bottom: 20px;
   border-radius: 4px;
-  box-shadow: 0px 0px 5px 0px #373737;
 }
 select {
-  background-color: #4f545c;
+  background-color: #303030;
   color: white;
 }
 fieldset legend {
-  background-color: #4f545c;
-  box-shadow: 0px 0px 5px 0px #373737;
+  background-color: #2d2d2d;
+  box-shadow: 0px 0px 5px 0px #303030;
   border-radius: 4px;
+  padding: 0.5% 1%;
 }
 fieldset>i.fas {
   position: absolute;
@@ -38,7 +38,9 @@ i.fas {
 }
 .channel {
   margin: 10px 0;
+  padding: 0.2% 1%;
   display: flex;
+  align-items: center;
 }
 .channel-name {
   width: 150px;
@@ -47,8 +49,10 @@ i.fas {
   margin-left: 10px;
 }
 .add-channel {
+  padding: 0.5% 1%;
   margin-top:30px;
   display: flex;
+  align-items: center;
 }
 .add-channel select {
   margin-left: 28px;
@@ -64,4 +68,5 @@ ul {
 .sound {
   display: flex;
   margin: 5px 0;
+  align-items: center;
 }
