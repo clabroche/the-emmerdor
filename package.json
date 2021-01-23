@@ -1,6 +1,6 @@
 {
   "name": "the-emmerdor",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "With this module, you have the possibility to configure the sounds played when a given user enters a discord channel.",
   "main": "index.js",
   "scripts": {
