@@ -42,6 +42,13 @@ export default {
       text-align: center;
       border-bottom: 4px solid transparent;
       box-sizing: border-box;
+      cursor: pointer;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      &:hover {
+        background-color: rgba(0,0,0,0.1);
+        transition: 300ms;
+      }
     }
     .active {
       border-bottom: 4px solid white;

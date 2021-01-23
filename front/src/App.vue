@@ -31,11 +31,14 @@ export default {
 </script>
 <style lang="scss">
 @import '~@fortawesome/fontawesome-free/css/all.min.css';
+@import './assets/fonts/Jost/Jost.css';
 
 body {
   margin: none;
   background-color: #202020;
   color: white;
+  font-family: JOST, sans-serif;
+  background-image: url('https://www.transparenttextures.com/patterns/black-linen-2.png');
 }
 fieldset {
   position: relative;
@@ -83,32 +86,6 @@ body {
 .root {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-}
-
-#tab-container{
-  display: flex;
-  flex-direction: column;
-}
-#tab-container #header {
-  display: flex;
-  justify-content: center;
-  font-size: 1.1em;
-  font-weight: bold;
-}
-#tab-container #header .item {
-  width: 200px;
-  padding: 10px;
-  text-align: center;
-  border-bottom: 4px solid transparent;
-  box-sizing: border-box;
-}
-#tab-container #header .active {
-  border-bottom: 4px solid white;
-  transition: 300ms
-}
-#tab-container .separator {
-  padding: 10px;
-  margin: 0 10px;
+  height: 100vh;
 }
 </style>
