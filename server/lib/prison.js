@@ -12,7 +12,7 @@ function Prison() {
   }
   setTimeout(() => {
     if (this.prisonChannel && this.prisonChannel.id) this.join(discord.prison.channels.cache.get(this.prisonChannel.id));
-  }, 1000);
+  }, 5000);
   this.loopAudio()
 } 
 Prison.prototype.join = async function(channel) {

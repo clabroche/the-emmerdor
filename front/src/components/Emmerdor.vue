@@ -1,5 +1,4 @@
-const Emmerdor = {
-  template: `
+<template>
   <div class="emmerdor-container">
     <div class="trigger-manager">
       <fieldset v-for="user of triggered" :key="user.username">
@@ -34,9 +33,9 @@ const Emmerdor = {
     </div>
 
     <div class="sound-container">
-      <fieldset v-if="sounds.length">
+      <fieldset>
         <legend>Mes fichiers</legend>
-        <ul>
+        <ul v-if="sounds.length">
           <li v-for="sound of sounds" :key="sound" class="sound">
             <i class="fas fa-times" aria-hidden="true" @click="deleteSound(sound)"></i>
             {{sound}}
@@ -49,22 +48,24 @@ const Emmerdor = {
       </fieldset>
     </div>
   </div>
-    `,
-    data() {
-      return {
-        users: [],
-        channels: [],
-        triggered: [],
-        sounds: [],
-        prisonVocalID: '',
-        actualPrisonMusic: ''
-      }
-    },
+</template>
 
+<script>
+import axios from '../services/axios'
+export default {
+  data() {
+    return {
+      users: [],
+      channels: [],
+      triggered: [],
+      sounds: [],
+      prisonVocalID: '',
+      actualPrisonMusic: ''
+    }
+  },
   async mounted() {
     this.refresh()
   },
-  
   methods: {
     async upload(files) {
       var formData = new FormData();
@@ -135,3 +136,55 @@ const Emmerdor = {
     },
   }
 }
+</script>
+
+<style lang="scss" scoped>
+.channel {
+  margin: 10px 0;
+  padding: 0.2% 1%;
+  display: flex;
+  align-items: center;
+}
+.channel-name {
+  width: 150px;
+}
+.channel select {
+  margin-left: 10px;
+}
+
+.add-channel {
+  padding: 0.5% 1%;
+  margin-top:30px;
+  display: flex;
+  align-items: center;
+}
+.add-channel select {
+  margin-left: 28px;
+}
+.sound {
+  display: flex;
+  margin: 5px 0;
+  align-items: center;
+}
+
+.emmerdor-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  max-width: 100vw;
+  overflow: auto;
+}
+.trigger-manager {
+  background-color: #414141;
+  border-radius: 4px;
+  padding: 5px;
+  margin: 10px 10px;
+  flex-grow: 1;
+}
+.sound-container {
+  background-color: #414141;
+  border-radius: 4px;
+  padding: 5px;
+  margin: 10px 0;
+}
+</style>

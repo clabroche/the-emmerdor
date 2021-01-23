@@ -1,11 +1,11 @@
 #!/bin/env node
 // @ts-ignore
 require('array-flat-polyfill');
-require('./requirements')
-require('./server')
+require('../lib/requirements')
+require('../api/index')
 const path = require('path')
-const discord = require('./discord')
-const triggeredUsers = require('./triggeredUsers')
+const discord = require('../lib/discord')
+const triggeredUsers = require('../lib/triggeredUsers')
 
 const sessions = {}
 ;(async _ => {
@@ -27,8 +27,8 @@ ${process.env.NODE_ENV === 'development' ? '(development version)': ''}
 /**
  * Check if a user have conf associated to a sound and this channel
  * if ok: play sound
- * @param {import('./discord').Client} client
- * @param {import('./discord').VoiceState} voiceState
+ * @param {import('discord.js').Client} client
+ * @param {import('discord.js').VoiceState} voiceState
  */
 async function enterChannel(client, voiceState) {
   const userId = voiceState.id
@@ -62,8 +62,8 @@ async function enterChannel(client, voiceState) {
 
 /**
  * Flag user to re-trigger him when he re-enter later in a channel
- * @param {import('./discord').Client} client
- * @param {import('./discord').VoiceState} voiceState
+ * @param {import('discord.js').Client} client
+ * @param {import('discord.js').VoiceState} voiceState
  */
 async function leaveChannel(client, voiceState) {
   const userId = voiceState.id

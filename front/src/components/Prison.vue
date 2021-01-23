@@ -1,5 +1,4 @@
-const Prison = {
-  template: `
+<template>
   <div class="prison-container">
     <div class="prison-section">
       <h3>Changer la prison</h3>
@@ -17,20 +16,22 @@ const Prison = {
       </select>
     </div>
   </div>
-    `,
-    data() {
-      return {
-        prisonVocalID: '',
-        actualPrisonMusic: '',
-        sounds: [],
-        channels: [],
-      }
-    },
+</template>
 
+<script>
+import axios from '../services/axios'
+export default {
+  data() {
+    return {
+      prisonVocalID: '',
+      actualPrisonMusic: '',
+      sounds: [],
+      channels: [],
+    }
+  },
   async mounted() {
     this.refresh()
   },
-  
   methods: {
     async refresh() {
       const { data: prisonVocalID } = await axios.get('/prisonVocalID')
@@ -52,3 +53,30 @@ const Prison = {
     },
   }
 }
+</script>
+<style lang="scss" scoped>
+.prison-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+}
+.prison-section {
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+  background-color: #414141;
+  padding: 10px;
+  width: 500px;
+  margin: 10px;
+  border-radius: 10px;
+  text-align: center;
+}
+.prison-section select {
+  margin: auto;
+}
+.prison-section h3 {
+  margin: 0;
+  margin-bottom: 10px;
+}
+</style>

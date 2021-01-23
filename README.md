@@ -24,7 +24,7 @@ You can get your token when you click on ```Click to Reveal Token```
 ## Usage
 
 ``` bash
-DISCORD_TOKEN=<your bot token\> CHANNEL_ID=<channel to send msg> PASSWORD=<a password to secure frontend\> nodemon --ext js src/index
+PRISON_TOKEN=<your bot token\> DISCORD_TOKEN=<your bot token\> CHANNEL_ID=<channel to send msg> PASSWORD=<a password to secure frontend\> npm run serve
 ```
 
 Available command in discord: 
@@ -44,12 +44,11 @@ A docker version is upload [here](https://github.com/clabroche/docker-registry/p
 An exemple of [docker-compose.yml](https://github.com/clabroche/the-emmerdor/blob/master/docker-compose.yml) is present on this repository 
 
 ## Architecture
-- configs // Where config are stored for persistence
-- sounds // Where sound are stored for persistence
-- src  // All source code 
-  - front // admin front end 
-  - index.js // bot entrypoint
-  -  server.js // server launched on bot startup
+- front/ // All front stuff for admin dashboard
+- server/configs // Where config are stored for persistence
+- server/sounds // Where sound are stored for persistence
+- server/api  // All routes to manage bot with api 
+- server/bot  // Bot launcher
 
 ## Contribute
 
