@@ -1,7 +1,7 @@
 <template>
   <div class="root">
     <navbar/>
-    <router-view/>
+    <router-view v-if="authWorkflowDone"/>
   </div>
   
 </template>
@@ -14,11 +14,10 @@ export default {
   },
   data() {
     return {
-      currentTab: 'emmerdor',
+      authWorkflowDone: false
     }
   },
-  async mounted() {
-    console.log(auth.token)
+  async created() {
     if(!auth.token) this.$router.push({name: 'login'})
     else {
       const tokenValid = await auth.isTokenValid() 
@@ -26,6 +25,7 @@ export default {
         this.$router.push({name: 'login'})
       }
     }
+    this.authWorkflowDone = true
   }
 }
 </script>
