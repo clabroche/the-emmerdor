@@ -9,7 +9,7 @@ const stack = [
     spawnOptions: {
       cwd:  __dirname,
       env: Object.assign({
-        PORT: '5000',
+        PORT: '4876',
       }, process.env)
     }
   },
@@ -20,7 +20,7 @@ const stack = [
     spawnOptions: {
       cwd: __dirname,
       env: Object.assign({
-        VUE_APP_SERVER_URL: 'http://localhost:5000',
+        VUE_APP_SERVER_URL: 'http://localhost:4876',
       }, process.env)
     }
   },

@@ -1,42 +1,31 @@
 <template>
-  <div v-if="authenticated" class="root">
+  <div class="root">
     <navbar/>
-    <div id="tab-container">
-      <div id="header">
-        <div class="item" :class="{active: currentTab === 'emmerdor'}" @click="currentTab = 'emmerdor'">The emmerdor</div>
-        <div class="separator">|</div>
-        <div class="item" :class="{active: currentTab === 'prison'}" @click="currentTab = 'prison'">Prison</div>
-      </div>
-      <component :is="currentTab"/>
-    </div>
+    <router-view v-if="authWorkflowDone"/>
   </div>
-  <div v-else>
-    <input v-model="password" autofocus/>
-  </div>
+  
 </template>
 <script>
 import NavbarVue from './components/Navbar.vue'
-import EmmerdorVue from './components/Emmerdor.vue'
-import PrisonVue from './components/Prison.vue'
-import axios from './services/axios'
+import auth from './services/auth'
 export default {
   components: {
     navbar: NavbarVue,
-    emmerdor: EmmerdorVue,
-    prison: PrisonVue
-  },
-  watch: {
-    async password() {
-      const { data: authenticated } = await axios.post('/auth', { password: this.password })
-      this.authenticated = authenticated
-    }
   },
   data() {
     return {
-      currentTab: 'emmerdor',
-      authenticated: false,
-      password: '',
+      authWorkflowDone: false
     }
+  },
+  async created() {
+    if(!auth.token) this.$router.push({name: 'login'})
+    else {
+      const tokenValid = await auth.isTokenValid() 
+      if(!tokenValid) {
+        this.$router.push({name: 'login'})
+      }
+    }
+    this.authWorkflowDone = true
   }
 }
 </script>
