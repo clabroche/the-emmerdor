@@ -1,12 +1,26 @@
 const app = require('express').Router()
-const bcrypt = require('bcrypt')
+const user = require('../models/user')
 /**
  * Check if user has type the correct password to get access to front
- * (Very bad: we need to hash password with bcrypt, send a token to user and validate all others routes with this token to protect them)
  * @express-body {string} password
  */
-app.post('/auth', async(req, res) => {
-  const password = process.env.PASSWORD
-  return res.json(await bcrypt.compare(req.body.password, password))
+app.post('/auth', async (req, res) => {
+  return user.login(req.body.password)
+    .then(token => {
+      return token 
+        ? res.json(token)
+        : Promise.reject('Wrong password')
+    })
+    .catch(err => {
+      console.error(err)
+      res.status(401).send('Wrong password')
+    })
+})
+
+/**
+ * Check if a token is correct in header
+ */
+app.post('/auth/is-token-valid', async (req, res) => {
+  res.json(user.tokens.includes(req.headers.token))
 })
 module.exports = app
