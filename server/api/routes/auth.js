@@ -7,9 +7,6 @@ const bcrypt = require('bcrypt')
  */
 app.post('/auth', async(req, res) => {
   const password = process.env.PASSWORD
-  if (await bcrypt.compare(req.body.password, password)) {
-    return res.json(true)
-  }
-  res.json(false)
+  return res.json(await bcrypt.compare(req.body.password, password))
 })
 module.exports = app
