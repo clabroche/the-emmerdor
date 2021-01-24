@@ -6,15 +6,18 @@
       <div class="item" :class="{active: currentTab === 'prison'}" @click="currentTab = 'prison'">Prison</div>
     </div>
     <component :is="currentTab"/>
+    <sound-manager/>
   </div>
 </template>
 <script>
 import EmmerdorVue from '../components/Emmerdor.vue'
 import PrisonVue from '../components/Prison.vue'
+import SoundManagerVue from '../components/SoundManager.vue'
 export default {
   components: {
     emmerdor: EmmerdorVue,
-    prison: PrisonVue
+    prison: PrisonVue,
+    soundManager: SoundManagerVue
   },
   data() {
     return {
@@ -36,6 +39,9 @@ export default {
     justify-content: center;
     font-size: 1.1em;
     font-weight: bold;
+    height: 50px;
+    box-shadow: 0px 6px 7px -7px black;
+    background-color: rgba(0,0,0,0.17);
     .item {
       width: 200px;
       padding: 10px;
