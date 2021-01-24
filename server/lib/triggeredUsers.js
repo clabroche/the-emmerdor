@@ -71,8 +71,27 @@ module.exports = {
    * @param {PersonTrigger} user
    */
   save() {
+    this.list.forEach(user => {
+      user.avatarURL = getAvatar(user)
+      user.channels.forEach(channel => {
+        channel.name = getChannelNameFromChannelId(channel.id)
+        channel.guildName = getGuildNameFromChannelId(channel.id)
+        if (!channel.sound) channel.sound = null
+      })
+    })
     return fse.writeJSON(jsonPath, this.list)
   }
+}
+
+function getAvatar(user) {
+  const discordUser = Array.from(discord.client.users.cache.values())
+    .filter(_user => user.username === _user.username)
+    .pop()
+
+  if (discordUser) {
+    return discordUser.avatarURL()
+  }
+  return null
 }
 
 /**
@@ -124,6 +143,7 @@ function getGuildNameFromChannelId(channelId) {
  * @typedef {Object} PersonTrigger
  * A person that have at least one trigger
  * @property {string} username
+ * @property {string} avatarURL
  * @property {Channel[]} channels
  */
 

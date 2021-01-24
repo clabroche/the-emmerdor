@@ -1,51 +1,66 @@
 <template>
-  <div class="emmerdor-container">
-    <div class="trigger-manager">
-      <fieldset v-for="user of triggered" :key="user.username">
-        <legend>{{user.username}}</legend>
-        <i class="fas fa-times" aria-hidden="true" @click="deleteUser(user)"></i>
-        <div v-for="channel of user.channels" :key="channel.id" class="channel">
-          <i class="fas fa-times" aria-hidden="true" @click="deleteChannel(user, channel)"></i>
-          <div class="channel-name">{{channel.guildName}} > {{channel.name}}</div> =>
-          <select @input="save()" v-model="channel.sound">
-            <option :selected="!channel.sound"></option>
-            <option v-for="sound of sounds" :key="sound" :selected="sound === channel.sound">{{sound}}</option>
-          </select>
+  <div class="emmerdor-scroller">
+    <div class="emmerdor-container">
+      <div class="header">
+        <h2>Gérer mes utilisateurs</h2>
+        <div class="input-container">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Rechercher un utilisateur..." v-model="filter">
         </div>
-        <div class="add-channel">
-          <i class="fas fa-plus" aria-hidden="true"></i>
-          <div class="channel-name">Ajouter un channel</div>
-          <select @input="addChannel(user, $event.target.value)">
-            <option></option>
-            <option v-for="channel of channelsNotInUser(user)" :key="channel.id" :value="channel.id">{{channel.guildName}} >
-              {{channel.name}}</option>
-          </select>
-        </div>
-      </fieldset>
-      <div class="text-center">
-        <h3>Ajouter un utilisateur</h3>
-        <select @input="addUser($event.target.value)">
-          <option></option>
-          <option v-for="user of usersNotConfigured()" :key="user.username" :value="user.username">{{user.username}}
-          </option>
-        </select>
       </div>
-    </div>
-
-    <div class="sound-container">
-      <fieldset>
-        <legend>Mes fichiers</legend>
-        <ul v-if="sounds.length">
-          <li v-for="sound of sounds" :key="sound" class="sound">
-            <i class="fas fa-times" aria-hidden="true" @click="deleteSound(sound)"></i>
-            {{sound}}
-          </li>
-        </ul>
-        <div>
-          <h3>Ajouter un son</h3>
-          <input type='file' ref="upload" name='sound' accept="audio/*" @input='upload($event.target.files)'>
+      <div class="trigger-manager">
+        <transition-group name="users">
+        <div v-for="user of triggeredFiltered" :key="user.username" class="user">
+          <div class="user-infos">
+            <div class="avatar">
+              <img :src="user.avatarURL || 'https://www.online-tech-tips.com/wp-content/uploads/2019/09/discord.jpg'" :alt="user.username + ' avatar'">
+            </div>
+            {{user.username}}
+            <div class="channel-delete" @click="deleteUser(user)">
+              <i class="fas fa-times"></i>
+            </div>
+          </div>
+          <div class="channels">
+            <transition-group name="channels">
+            <div v-for="channel of user.channels" :key="channel.id" class="channel">
+              <div class="channel-infos">
+                <div class="channel-name">
+                  {{channel.guildName}}#{{channel.name}}
+                </div>
+                <div class="channel-delete" @click="deleteChannel(user, channel)">
+                  <i class="fas fa-times"></i>
+                </div>
+              </div>
+              <div class="selector-sound">
+                <select @input="save()" v-model="channel.sound">
+                  <option :value="null" disabled hidden>Aucun son ne sera joué pour cette utilisateur</option>
+                  <option :selected="!channel.sound"></option>
+                  <option v-for="sound of sounds" :key="sound" :selected="sound === channel.sound">{{sound}}</option>
+                </select>
+              </div>
+            </div>
+            </transition-group>
+            <div class="add-channel" :key="'add-channel'">
+              <i class="fas fa-plus" aria-hidden="true"></i>
+              <select @input="addChannel(user, $event.target.value)">
+                <option :value="null" disabled hidden selected>Ajouter un salon...</option>
+                <option v-for="channel of channelsNotInUser(user)" :key="channel.id" :value="channel.id">
+                  {{channel.guildName}}#{{channel.name}}
+                </option>
+              </select>
+            </div>
+          </div>
         </div>
-      </fieldset>
+        </transition-group>
+        <div class="text-center">
+          <h3>Ajouter un utilisateur</h3>
+          <select @input="addUser($event.target.value)">
+            <option></option>
+            <option v-for="user of usersNotConfigured()" :key="user.username" :value="user.username">{{user.username}}
+            </option>
+          </select>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -60,24 +75,20 @@ export default {
       triggered: [],
       sounds: [],
       prisonVocalID: '',
-      actualPrisonMusic: ''
+      actualPrisonMusic: '',
+      filter: ''
+    }
+  },
+  computed: {
+    triggeredFiltered() {
+      return this.triggered.filter(user => user.username.toUpperCase().includes(this.filter.toUpperCase()))
     }
   },
   async mounted() {
     this.refresh()
   },
   methods: {
-    async upload(files) {
-      var formData = new FormData();
-      formData.append("sound", files[0]);
-      await axios.post('/sounds/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
-      this.$refs.upload.value = "";
-      this.refresh()
-    },
+    
     async refresh() {
       const { data: users } = await axios.get('/users')
       this.users = users
@@ -91,10 +102,6 @@ export default {
       this.prisonVocalID = prisonVocalID
       const { data: actualPrisonMusic } = await axios.get('/actualPrisonMusic')
       this.actualPrisonMusic = actualPrisonMusic
-    },
-    async deleteSound(sound) {
-      await axios.delete('/sounds/' + sound)
-      this.refresh()
     },
     save() {
       axios.post('/users/triggered', this.triggered)
@@ -139,52 +146,246 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.channel {
-  margin: 10px 0;
-  padding: 0.2% 1%;
-  display: flex;
-  align-items: center;
-}
-.channel-name {
-  width: 150px;
-}
-.channel select {
-  margin-left: 10px;
-}
-
-.add-channel {
-  padding: 0.5% 1%;
-  margin-top:30px;
-  display: flex;
-  align-items: center;
-}
-.add-channel select {
-  margin-left: 28px;
-}
-.sound {
-  display: flex;
-  margin: 5px 0;
-  align-items: center;
+.emmerdor-scroller {
+  height: calc(100vh - 85px);
+  overflow: auto;
 }
 
 .emmerdor-container {
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
-  justify-content: space-around;
-  max-width: 100vw;
-  overflow: auto;
+  width: 90vw;
+  max-width: 500px;
+  margin: auto;
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 30px;
+    width: 100%;
+    h2 {
+      text-align: left;
+      margin-bottom: 0;
+      margin: 0;
+    }
+    .input-container {
+      margin-bottom: 3px;
+      display: flex;
+      i {
+        margin: 0;
+        background-color: transparent;
+        color: #696969;
+      }
+      input {
+        background-color: transparent;
+        border: none;
+        color: white;
+        outline: none;
+      }
+    }
+  }
+  .trigger-manager {
+    border-radius: 4px;
+    max-width: 360px;
+    padding: 5px;
+    margin: 10px 0;
+    flex-grow: 1;
+    width: 100%;
+    .user {
+      margin: 70px 0;
+      box-sizing: border-box;
+      transform-origin: left;
+      &:first-of-type {
+        margin: 0;
+      }
+      .user-infos {
+        display: flex;
+        align-items: center;
+        .avatar {
+          width: 40px;
+          height: 40px;
+          margin-right: 10px;
+          img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+          }
+        }
+      }
+      .channel-delete {
+        margin-left: 30px;
+        border: 1px solid #b96f6f;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        transition: 300ms;
+        cursor: pointer;
+        &:hover {
+          color: white;
+          background-color: #b96f6f;
+        }
+        &::before {
+          content: "";
+          left: 0;
+          transform: translateX(-100%);
+          position: absolute;
+          background: rgb(111,185,154);
+          background: linear-gradient(90deg, rgba(111,185,154,1) 0%, rgba(185,111,111,1) 100%);
+          width: 30px;
+          height: 1px;
+        }
+        i {
+          width: 100%;
+          height: 100%;
+          background-color: transparent;
+          color: white;
+          margin: 0;
+          font-size: 0.8em;
+        }
+      }
+      .channels{
+        border-left: 1px solid #6f7fb9;
+        margin-left: 18px;
+        &>div:first-of-type {
+          margin-top: 0;
+        }
+        .channel {
+          padding-left: 40px;
+          box-sizing: border-box;
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          width: max-content;
+          margin: 40px 0;
+          max-height: 70px;
+          transform-origin: left;
+
+          &::before {
+            content: "";
+            top: 13px;
+            width: 40px;
+            height: 1px;
+            background: rgb(19,37,89);
+            background: linear-gradient(90deg, rgba(19,37,89,1) 0%, rgba(111,185,154,1) 100%);
+            position: absolute;
+            left: 0;
+          }
+          
+          .channel-infos {
+            display: flex;
+            align-items: center;
+            .channel-name {
+              background-color: #6fb99a;
+              padding: 0 4px;
+              border-radius: 4px;
+              width: max-content;
+            }
+            
+          }
+          .selector-sound {
+            margin-left: 40px;
+            margin-top: 10px;
+            position: relative;
+            &::before {
+              content: "";
+              position: absolute;
+              height: 1px;
+              top: 13px;
+              width: 20px;
+              left: -20px;
+              background: rgb(146,173,135);
+              background: linear-gradient(90deg, rgba(146,173,135,1) 0%, rgba(185,159,111,1) 100%);
+            }
+            &::after {
+              content: "";
+              position: absolute;
+              height: 24px;
+              top: -10px;
+              width: 1px;
+              left: -20px;
+              background: rgb(111,185,154);
+              background: linear-gradient(90deg, rgba(111,185,154,1) 0%, rgba(146,173,135,1) 100%);
+            }
+            select {
+              border: 1px solid #b99f6f;
+              padding: 5px;
+              border-radius: 4px;
+              box-sizing: border-box;
+              width: 260px;
+              max-width: none;
+              outline: none;
+              cursor: pointer;
+            }
+          }
+        }
+      }
+    }
+    .add-channel {
+      margin-top: 30px;
+      margin-left: 40px;
+      display: flex;
+      align-items: center;
+      position: relative;
+      border: 1px solid #6fb99a;
+      border-radius: 4px;
+      width: 200px;
+      box-sizing: border-box;
+      height: 30px;
+      &::before {
+        content: "";
+        position: absolute;
+        transform: translateX(-100%);
+        left: 0;
+        width: 40px;
+        height: 1px;
+        background: #132559;
+        background: linear-gradient(90deg, #132559 0%, #6fb99a 100%);
+      }
+      i {
+        background-color: transparent;
+        color: white;
+        z-index: 1;
+      }
+      select {
+        border-radius: 4px;
+        border: none;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        max-width: none;
+        padding-left: 30px;
+        outline: none;
+      }
+    }
+    .sound {
+      display: flex;
+      margin: 5px 0;
+      align-items: center;
+    }
+  }
 }
-.trigger-manager {
-  background-color: #414141;
-  border-radius: 4px;
-  padding: 5px;
-  margin: 10px 10px;
-  flex-grow: 1;
+
+.channels-enter-active, .channels-leave-active {
+  transition: all 300ms;
 }
-.sound-container {
-  background-color: #414141;
-  border-radius: 4px;
-  padding: 5px;
-  margin: 10px 0;
+.channels-enter-from, .channels-leave-to {
+  transform: scaleX(0);
+}
+.users-enter-active, .users-leave-active {
+  transition: all 300ms;
+  max-height: 200px;
+
+}
+.users-enter-from, .users-leave-to {
+  transform: scale(0);
+  max-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 </style>

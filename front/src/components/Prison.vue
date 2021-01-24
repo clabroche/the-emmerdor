@@ -1,15 +1,16 @@
 <template>
   <div class="prison-container">
     <div class="prison-section">
-      <h3>Changer la prison</h3>
+      <h3>Salon</h3>
       <select @input="changePrisonID($event.target.value)">
         <option></option>
         <option v-for="channel of channels" :key="channel.id" :value="channel.id"
-          :selected="channel.id === prisonVocalID">{{channel.guildName}} > {{channel.name}}</option>
+          :selected="channel.id === prisonVocalID">{{channel.guildName}} #{{channel.name}}</option>
       </select>
     </div>
+    <div class="arrow"></div>
     <div class="prison-section">
-      <h3>Changer la musique de la prison</h3>
+      <h3>Musique</h3>
       <select @input="changePrisonMusic($event.target.value)" v-model="actualPrisonMusic">
         <option :selected="!actualPrisonMusic"></option>
         <option v-for="sound of sounds" :key="sound" :selected="sound === actualPrisonMusic">{{sound}}</option>
@@ -57,8 +58,9 @@ export default {
 <style lang="scss" scoped>
 .prison-container {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
   text-align: center;
 }
 .prison-section {
@@ -67,16 +69,46 @@ export default {
   flex-direction: column;
   background-color: #414141;
   padding: 10px;
-  width: 500px;
+  max-width: 500px;
+  width: 90vw;
   margin: 10px;
   border-radius: 10px;
   text-align: center;
+  &:first-of-type {
+    margin-top:  30px;
+  }
 }
 .prison-section select {
   margin: auto;
+  max-width: none;
 }
 .prison-section h3 {
   margin: 0;
   margin-bottom: 10px;
+}
+
+.arrow {
+  height: 75px;
+  position: relative;
+  &::before {
+    position: absolute;
+    content: "";
+    width: 5px;
+    height: 50px;
+    background-color: #fff;
+  }
+  &::after {
+    position: absolute;
+    content: "";
+    display : inline-block;
+    height : 0;
+    width : 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(calc(-50% + 3px)) translateY(-5px);
+    border-top : 30px solid white;
+    border-right : 10px solid transparent;
+    border-left : 10px solid transparent;
+  }
 }
 </style>

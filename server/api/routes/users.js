@@ -35,11 +35,6 @@ app.get('/users/triggered/:username', (req, res) => {
 app.post('/users/triggered', async (req, res) => {
   if (!Array.isArray(req.body)) return res.status(400).send('Body should be an array')
   triggeredUsers.list = req.body
-  triggeredUsers.list.forEach(user => user.channels.forEach(channel => {
-    channel.name = getChannelNameFromChannelId(channel.id)
-    channel.guildName = getGuildNameFromChannelId(channel.id)
-    if (!channel.sound) channel.sound = null
-  }))
   await triggeredUsers.save()
   res.json(req.body)
 })
