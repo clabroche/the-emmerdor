@@ -127,16 +127,18 @@ function createEmbededReport(isGood = true, description, _title) {
  * @param {string} channelId 
  */
 function getChannelNameFromChannelId(channelId) {
+  const channel = discord.client.channels.cache.get(channelId)
   // @ts-ignore
-  return discord.client.channels.cache.get(channelId).name
+  return channel ? channel.name : null
 }
 /**
  * Get channel name from channelId
  * @param {string} channelId
  */
 function getGuildNameFromChannelId(channelId) {
+  const channel = discord.client.channels.cache.get(channelId)
   // @ts-ignore
-  return discord.client.channels.cache.get(channelId).guild.name
+  return channel ? channel.guild.name : null
 }
 
 /**
